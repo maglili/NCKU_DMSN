@@ -14,6 +14,7 @@
 2. DecisionTree.ipynb: 使用 sklearn 建立 Decision Tree
 
 最後預測結果為 "predict.txt"，結果如下所示:
+
 ![predict](./pics/pred.png)
 
 ## Decision Tree method
@@ -122,7 +123,9 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp1-acc.png)
+
 ![acc](./pics/exp1-loss.png)
 
 #### Exp 2
@@ -140,7 +143,9 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp2-acc.png)
+
 ![acc](./pics/exp2-loss.png)
 
 #### Exp 3
@@ -158,7 +163,9 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp3-acc.png)
+
 ![acc](./pics/exp3-loss.png)
 
 #### Exp 4
@@ -176,7 +183,9 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp4-acc.png)
+
 ![acc](./pics/exp4-loss.png)
 
 #### Exp 5
@@ -194,7 +203,9 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp5-acc.png)
+
 ![acc](./pics/exp5-loss.png)
 
 #### Exp 6
@@ -216,5 +227,7 @@ class NN(nn.Module):
 5. loss function: CrossEntropy
 
 **Results:**
+
 ![acc](./pics/exp6-acc.png)
+
 ![acc](./pics/exp6-loss.png)
