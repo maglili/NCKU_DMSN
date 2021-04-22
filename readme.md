@@ -13,3 +13,7 @@ Sequential Pattern
 ## HW3
 
 Cliassification
+
+## HW4
+
+K-means
