@@ -1,0 +1,397 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2021
+
+% ready for submission
+%\usepackage{neurips_2021}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+     \usepackage[preprint]{neurips_2021}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2021}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2021}
+
+\bibliographystyle{unsrtnat} % <----------- must add for natbib 
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+\title{DMSN final project: Improve LESSR model structure}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+  TENG, LI-CHANG\\
+  Department of Electrical Engineering\\
+  National Cheng Kung University\\
+  \texttt{n26091194@gs.ncku.edu.tw} \\
+  % examples of more authors
+  \And
+  TENG, LI-CHANG\\
+  Department of Electrical Engineering\\
+  National Cheng Kung University\\
+  \texttt{n26091194@gs.ncku.edu.tw} \\
+  \AND
+  TENG, LI-CHANG\\
+  Department of Electrical Engineering\\
+  National Cheng Kung University\\
+  \texttt{n26091194@gs.ncku.edu.tw} \\
+  \And
+  TENG, LI-CHANG\\
+  Department of Electrical Engineering\\
+  National Cheng Kung University\\
+  \texttt{n26091194@gs.ncku.edu.tw} \\
+%   \And
+%   Coauthor \\
+%   Affiliation \\
+%   Address \\
+%   \texttt{email} \\
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    None
+    \vspace{2cm}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{INTORDUCTION}
+None
+\vspace{2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{RELAED WORK}
+None
+\vspace{2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{PRELIMINARY}
+None
+\vspace{2cm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{EXPERIMENTS}
+
+In this section, we will introduce experiment setting,
+dataset, and analyze the experiment result.
+
+\subsection{Dataset}
+
+We used Diginetica dataset\footnote{\url{https://competitions.codalab.org/competitions/111610}} following LESSR \cite{chen2020lessr} paper, which is the CIKM cup 2016 dataset provided by DIGINETICA Crop. There are 6 files in Diginetica dataset, but we only need the transaction one. As \cite{chen2020lessr}, we used last week sessions as test data. We got the same training and test set by following preprocessing method described in \cite{chen2020lessr}. Statistics is shown in Table~\ref{data-stats}.
+
+\begin{table}
+    \caption{statistics of dataset}
+    \label{data-stats}
+    \centering
+    \begin{tabular}{ll}
+        \toprule
+        \multicolumn{2}{c}{Diginetica} \\
+        \midrule
+        No. of Clicks   & 981,620      \\
+        No. of Sessions & 777,029      \\
+        No. of Items    & 42,596       \\
+        Average length  & 4.80         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Baseline and metrics}
+
+We used \cite{chen2020lessr} as out baseline,
+then we tried to improve \cite{chen2020lessr} by some changes.
+Compare the metrics to \cite{chen2020lessr},
+we could know the change is postive or negative influence.
+Following \cite{chen2020lessr},
+the metrics we used are HR@20 (Hit Rate) and MRR@20 (Mean Reciprocal Rank).
+
+\subsection{MUTIHEADATTENTION}
+
+MUTIHEADATTENTION\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html}}
+is a official implemented self-attention layer by pytorch.
+Here we replace GRU\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.GRU.html}} layer in EOPA block in [1] by MUTIHEADATTENTION layer. All setting are the same but GRU now replaced by MUTIHEADATTENTION. We adjusted num of heads parameter in MUTIHEADATTENTION layer to see the influence of muti-head attention.
+
+The pytorch official did not implemented positional encoding in MUTIHEADATTENTION layer, so there is no position information within layer. To handle this problem we need to do position encoding manually. We fonud a offical tutorial\footnote{\url{https://pytorch.org/tutorials/beginner/transformer_tutorial.html}} that manually implemented position encoding, so we followed the encoding method here.
+
+\subsubsection{Multi-head w/o pos encoding}
+
+Table~\ref{Multi-head w/o pos encoding} shown the experiment result,
+we could found that no matter what multi-head value is,
+the result is worse than baseline.
+
+\begin{table}
+    \caption{Multi-head w/o pos encoding}
+    \label{Multi-head w/o pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93   & -            \\
+        Head=1   & 52.65 & 18.25  & 25.85   & -0.903594775 \\
+        Head=2   & 52.58 & 18.27  & 25.84   & -0.965396084 \\
+        Head=4   & 52.6  & 18.28  & 25.85   & -0.834321462 \\
+        Head=8   & 52.63 & 18.28  & 25.87   & -0.700394057 \\
+        Head=16  & 52.62 & 18.28  & 25.86   & -0.757891648 \\
+        Head=32  & 52.64 & 18.29  & 25.87   & -0.626817026 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Multi-head with pos encoding}
+
+Table~\ref{Multi-head with pos encoding} shown the experiment result,
+we could found that no matter what multi-head value is,
+the result is worse than baseline.
+
+\begin{table}
+    \caption{Multi-head with pos encoding}
+    \label{Multi-head with pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93   & -            \\
+        Head=1   & 52.57 & 18.26  & 25.83   & -1.077538484 \\
+        Head=2   & 52.55 & 18.29  & 25.85   & -0.874337766 \\
+        Head=4   & 52.59 & 18.3   & 25.88   & -0.628267962 \\
+        Head=8   & 52.62 & 18.29  & 25.87   & -0.664681471 \\
+        Head=16  & 52.54 & 18.31  & 25.86   & -0.745415003 \\
+        Head=32  & 52.57 & 18.32  & 25.89   & -0.518277422 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+It turns out no matter multi-head or positional encoding,can not improve the result.
+So in next section we decided to using more complex layer.
+
+\subsection{Transformer encoder}
+
+In this section, we use transformer encoder
+\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoder.html}}
+to replace GRU.
+TransformerEncoder has a lot of hyperparameter, so we conducted
+3 main experiments to tuning the model:
+1) dim\_feedforward 2) nhead 3) encoder\_layer.
+Also, each main experiments have two sub experiments:
+1) w/o pos encoding 2) with pos encoding.
+
+\subsubsection{dim exp w/o pos encoding}
+
+In this experiment we fix all hyperprameters but dim\_feedforward
+without positional encoding. Result shown in Table~\ref{dim exp w/o pos encoding}.
+
+\begin{table}
+    \caption{dim exp w/o pos encoding}
+    \label{dim exp w/o pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline   & 52.82 & 18.3   & 25.93   & -            \\
+        Dim = 2048 & 52.73 & 18.25  & 25.83   & -0.82926773  \\
+        Dim = 1024 & 52.9  & 18.31  & 25.86   & -0.063854988 \\
+        Dim = 512  & 52.97 & 18.35  & 26      & 0.827164961  \\
+        Dim = 256  & 52.67 & 18.28  & 25.88   & -0.586099799 \\
+        Dim = 128  & 52.88 & 18.34  & 25.94   & 0.370737939  \\
+        Dim = 64   & 52.84 & 18.39  & 26.01   & 0.83819067   \\
+        Dim = 32   & 52.7  & 18.24  & 25.85   & -0.863578471 \\
+        Dim = 16   & 52.68 & 18.3   & 25.88   & -0.457877958 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{dim exp with pos encoding}
+
+Same here, we fix all hyperprameters but dim\_feedforward with
+positional encoding. Result shown in Table~\ref{dim exp with pos encoding}.
+
+\begin{table}
+    \caption{dim exp with pos encoding}
+    \label{dim exp with pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline   & 52.82 & 18.3   & 25.93   & -            \\
+        Dim = 2048 & 52.74 & 18.28  & 25.88   & -0.45357424  \\
+        Dim = 1024 & 52.86 & 18.3   & 25.88   & -0.117097951 \\
+        Dim = 512  & 52.85 & 18.36  & 25.97   & 0.538926994  \\
+        Dim = 256  & 52.7  & 18.26  & 25.86   & -0.715723485 \\
+        Dim = 128  & 52.89 & 18.37  & 25.95   & 0.592169956  \\
+        Dim = 64   & 52.79 & 18.34  & 25.95   & 0.238913304  \\
+        Dim = 32   & 52.74 & 18.29  & 25.9    & -0.321798695 \\
+        Dim = 16   & 52.6  & 18.36  & 25.92   & -0.127205414 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+From Table~\ref{dim exp w/o pos encoding} and Table~\ref{dim exp with pos encoding},
+we fonud that the best dim\_feedforward is seeting 512,
+whether with pos encoding or not, dimension 512 in both case has a good result,
+so finally we choose dimension 512 for our model.
+
+\subsubsection{multi-head exp w/o pos encoding}
+
+We keep fixed all hyperprameters but changing nhead without positional encoding. Also, The dim\_feedforward set to 512. Result shown in Table~\ref{multi-head exp w/o pos encoding}.
+
+\begin{table}
+    \caption{multi-head exp w/o pos encoding}
+    \label{multi-head exp w/o pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        nhead=1  & 52.97 & 18.35  & 26      & 0.827164961 \\
+        nhead=2  & 52.77 & 18.37  & 25.95   & 0.364983285 \\
+        nhead=4  & 52.98 & 18.35  & 26      & 0.846097184 \\
+        nhead=8  & 52.87 & 18.37  & 25.96   & 0.592870879 \\
+        nhead=16 & 52.78 & 18.37  & 25.97   & 0.461046244 \\
+        nhead=32 & 52.92 & 18.41  & 25.97   & 0.944676596 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+\subsubsection{multi-head exp with pos encoding}
+
+In this experiment, we keep fixed all hyperprameters but
+changing nhead with positional encoding.
+Also, The dim\_feedforward set to 512.
+Result shown in Table~\ref{multi-head exp with pos encoding}.
+
+\begin{table}
+    \caption{multi-head exp with pos encoding}
+    \label{multi-head exp with pos encoding}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        nhead=1  & 52.85 & 18.36  & 25.97   & 0.538926994 \\
+        nhead=2  & 52.7  & 18.31  & 25.91   & -0.2496726  \\
+        nhead=4  & 52.88 & 18.38  & 25.98   & 0.743578647 \\
+        nhead=8  & 52.87 & 18.41  & 26.03   & 1.081407692 \\
+        nhead=16 & 52.82 & 18.35  & 25.96   & 0.388920149 \\
+        nhead=32 & 52.75 & 18.35  & 25.95   & 0.217829222 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Comparing  Table~\ref{multi-head exp w/o pos encoding} and
+Table~\ref{multi-head exp with pos encoding},
+We found the metrics without positional encoding are
+better than with positional encoding one.
+So positional information might not a critical info in this scenario.
+
+Note that best performance appeared when nhead set to 8 with postional encoding.
+
+\subsubsection{num-layers exp w/o pos}
+
+We keep fixed all hyperprameters but
+changing num\_layers without positional encoding.
+The dim\_feedforward was set to 512 and nhead was set to 1.
+Result shown in Table~\ref{num-layers exp w/o pos}.
+
+\begin{table}
+    \caption{num-layers exp w/o pos}
+    \label{num-layers exp w/o pos}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93	-                 \\
+        layer=1  & 52.97 & 18.35  & 26      & 0.827164961  \\
+        layer=2  & 52.72 & 18.41  & 25.93   & 0.41177067   \\
+        layer=3  & 52.69 & 18.4   & 25.95   & 0.37745993   \\
+        layer=4  & 52.69 & 18.33  & 25.89   & -0.236445941 \\
+        layer=6  & 52.65 & 18.13  & 25.72   & -2.060682268 \\
+        layer=8  & 52.24 & 17.96  & 25.48   & -4.691433984 \\
+        layer=16 & 52.11 & 17.77  & 25.34   & -6.515719401 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+\subsubsection{num-layers exp with pos}
+
+Here, we keep fixed all hyperprameters but
+changing num\_layers with positional encoding.
+The dim\_feedforward was set to 512 and nhead was set to 1.
+Result shown in Table~\ref{num-layers exp with pos}.
+
+\begin{table}
+    \caption{num-layers exp with pos}
+    \label{num-layers exp with pos}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        \midrule
+        baseline & 52.82 & 18.3   & 25.93   & -            \\
+        layer=1  & 52.85 & 18.36  & 25.97   & 0.538926994  \\
+        layer=2  & 52.77 & 18.41  & 25.96   & 0.622127888  \\
+        layer=3  & 52.72 & 18.34  & 25.88   & -0.163569833 \\
+        layer=4  & 52.84 & 18.32  & 25.9    & 0.031457958  \\
+        layer=6  & 52.8  & 18.18  & 25.78   & -1.272082675 \\
+        layer=8  & 52.3  & 17.95  & 25.46   & -4.709616194 \\
+        layer=16 & 52.04 & 17.81  & 25.37   & -6.313969619 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+We found that whether transformer encoder with positional encoding or not,
+it has similar trend that performance decreased as layers increased.
+And we found as layers increased, models's inference time also increased.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{CONCLUSION}
+None
+\vspace{2cm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\bibliography{refer}
+
+
+\end{document}

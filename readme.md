@@ -17,3 +17,7 @@ Cliassification
 ## HW4
 
 Clustering
+
+## Final Project
+
+Improve Paper [LESSR](https://github.com/twchen/lessr) model structure
