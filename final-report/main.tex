@@ -71,6 +71,8 @@
 
 \maketitle
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{abstract}
     None
     \vspace{2cm}
@@ -80,19 +82,19 @@
 
 \section{INTORDUCTION}
 None
-\vspace{2cm}
+\vspace{3cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{RELAED WORK}
 None
-\vspace{2cm}
+\vspace{3cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{PRELIMINARY}
 None
-\vspace{2cm}
+\vspace{3cm}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,10 +103,19 @@ None
 
 In this section, we will introduce experiment setting,
 dataset, and analyze the experiment result.
+We conducted several experiments to check out hypotheses and evaluate our
+model with choosen metric.
 
 \subsection{Dataset}
 
-We used Diginetica dataset\footnote{\url{https://competitions.codalab.org/competitions/111610}} following LESSR \cite{chen2020lessr} paper, which is the CIKM cup 2016 dataset provided by DIGINETICA Crop. There are 6 files in Diginetica dataset, but we only need the transaction one. As \cite{chen2020lessr}, we used last week sessions as test data. We got the same training and test set by following preprocessing method described in \cite{chen2020lessr}. Statistics is shown in Table~\ref{data-stats}.
+We choose Diginetica dataset\footnote{\url{https://competitions.codalab.org/competitions/111610}}
+following LESSR \cite{chen2020lessr} paper,
+which is the CIKM cup 2016 dataset provided by DIGINETICA Crop.
+There are 6 files in Diginetica dataset, but we only need the transaction one.
+As \cite{chen2020lessr}, we used last week sessions as test data.
+We got the same training and test set by following preprocessing method
+described in \cite{chen2020lessr}.
+Statistics of Diginetica dataset is shown in Table~\ref{data-stats}.
 
 \begin{table}
     \caption{statistics of dataset}
@@ -124,26 +135,34 @@ We used Diginetica dataset\footnote{\url{https://competitions.codalab.org/compet
 
 \subsection{Baseline and metrics}
 
-We used \cite{chen2020lessr} as out baseline,
-then we tried to improve \cite{chen2020lessr} by some changes.
-Compare the metrics to \cite{chen2020lessr},
+We choose \cite{chen2020lessr} as out baseline,
+then we tried to improve model structure in \cite{chen2020lessr} by some changes.
+Comparing the metrics to \cite{chen2020lessr},
 we could know the change is postive or negative influence.
 Following \cite{chen2020lessr},
 the metrics we used are HR@20 (Hit Rate) and MRR@20 (Mean Reciprocal Rank).
 
-\subsection{MUTIHEADATTENTION}
+\subsection{Multi-Head Attention}
 
 MUTIHEADATTENTION\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html}}
 is a official implemented self-attention layer by pytorch.
-Here we replace GRU\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.GRU.html}} layer in EOPA block in [1] by MUTIHEADATTENTION layer. All setting are the same but GRU now replaced by MUTIHEADATTENTION. We adjusted num of heads parameter in MUTIHEADATTENTION layer to see the influence of muti-head attention.
+Here we replace GRU\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.GRU.html}}
+layer in EOPA block in \cite{chen2020lessr} by MUTIHEADATTENTION layer.
+All settings are the same but GRU now replaced by MUTIHEADATTENTION.
+We adjusted num of heads parameter in MUTIHEADATTENTION layer
+to see the influence of muti-head attention.
 
-The pytorch official did not implemented positional encoding in MUTIHEADATTENTION layer, so there is no position information within layer. To handle this problem we need to do position encoding manually. We fonud a offical tutorial\footnote{\url{https://pytorch.org/tutorials/beginner/transformer_tutorial.html}} that manually implemented position encoding, so we followed the encoding method here.
+The pytorch official did not implemented positional encoding in
+MUTIHEADATTENTION layer, so there is no position information within layer.
+To handle this problem we need to do position encoding manually.
+We fonud a offical tutorial\footnote{\url{https://pytorch.org/tutorials/beginner/transformer_tutorial.html}}
+that manually implemented position encoding,
+so we followed the encoding method here.
 
-\subsubsection{Multi-head w/o pos encoding}
-
-Table~\ref{Multi-head w/o pos encoding} shown the experiment result,
-we could found that no matter what multi-head value is,
-the result is worse than baseline.
+Table~\ref{Multi-head w/o pos encoding} and Table~\ref{Multi-head with pos encoding}
+are the experiment result without and with positional encoding respectively.
+It turns out no matter multi-head or positional encoding, can not improve the result.
+So in next section we decided to using more complex layer.
 
 \begin{table}
     \caption{Multi-head w/o pos encoding}
@@ -164,12 +183,6 @@ the result is worse than baseline.
     \end{tabular}
 \end{table}
 
-\subsubsection{Multi-head with pos encoding}
-
-Table~\ref{Multi-head with pos encoding} shown the experiment result,
-we could found that no matter what multi-head value is,
-the result is worse than baseline.
-
 \begin{table}
     \caption{Multi-head with pos encoding}
     \label{Multi-head with pos encoding}
@@ -189,10 +202,7 @@ the result is worse than baseline.
     \end{tabular}
 \end{table}
 
-It turns out no matter multi-head or positional encoding,can not improve the result.
-So in next section we decided to using more complex layer.
-
-\subsection{Transformer encoder}
+\subsection{Transformer Encoder}
 
 In this section, we use transformer encoder
 \footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoder.html}}
@@ -203,10 +213,17 @@ TransformerEncoder has a lot of hyperparameter, so we conducted
 Also, each main experiments have two sub experiments:
 1) w/o pos encoding 2) with pos encoding.
 
-\subsubsection{dim exp w/o pos encoding}
+\subsubsection{Dim\_Feedforward Experiment}
 
-In this experiment we fix all hyperprameters but dim\_feedforward
-without positional encoding. Result shown in Table~\ref{dim exp w/o pos encoding}.
+In this experiment we fix all hyperprameters but dim\_feedforward.
+Table~\ref{dim exp w/o pos encoding} shown the result without
+positional encoding.
+Table~\ref{dim exp with pos encoding} shown the result with positional encoding.
+
+From Table~\ref{dim exp w/o pos encoding} and Table~\ref{dim exp with pos encoding},
+we fonud that the best dim\_feedforward is seeting 512,
+whether with pos encoding or not, dimension 512 in both case has a good result,
+so we choose dimension 512 for our model in the later experiments.
 
 \begin{table}
     \caption{dim exp w/o pos encoding}
@@ -229,11 +246,6 @@ without positional encoding. Result shown in Table~\ref{dim exp w/o pos encoding
     \end{tabular}
 \end{table}
 
-\subsubsection{dim exp with pos encoding}
-
-Same here, we fix all hyperprameters but dim\_feedforward with
-positional encoding. Result shown in Table~\ref{dim exp with pos encoding}.
-
 \begin{table}
     \caption{dim exp with pos encoding}
     \label{dim exp with pos encoding}
@@ -255,14 +267,21 @@ positional encoding. Result shown in Table~\ref{dim exp with pos encoding}.
     \end{tabular}
 \end{table}
 
-From Table~\ref{dim exp w/o pos encoding} and Table~\ref{dim exp with pos encoding},
-we fonud that the best dim\_feedforward is seeting 512,
-whether with pos encoding or not, dimension 512 in both case has a good result,
-so finally we choose dimension 512 for our model.
+\subsubsection{Multi-Head Experiment}
 
-\subsubsection{multi-head exp w/o pos encoding}
+Here we fixed all hyperprameters but nhead to see the influence.
+Also, The dim\_feedforward set to 512.
+Result without positional encoding shown in
+Table~\ref{multi-head exp w/o pos encoding} and result with
+positional encoding shown in Table~\ref{multi-head exp with pos encoding}.
 
-We keep fixed all hyperprameters but changing nhead without positional encoding. Also, The dim\_feedforward set to 512. Result shown in Table~\ref{multi-head exp w/o pos encoding}.
+Comparing  Table~\ref{multi-head exp w/o pos encoding} and
+Table~\ref{multi-head exp with pos encoding},
+We found the metrics without positional encoding are usually
+better than the other one.
+So positional information might not a critical info in this scenario.
+
+Note that best performance appeared when nhead set to 8 with postional encoding.
 
 \begin{table}
     \caption{multi-head exp w/o pos encoding}
@@ -283,14 +302,6 @@ We keep fixed all hyperprameters but changing nhead without positional encoding.
     \end{tabular}
 \end{table}
 
-
-\subsubsection{multi-head exp with pos encoding}
-
-In this experiment, we keep fixed all hyperprameters but
-changing nhead with positional encoding.
-Also, The dim\_feedforward set to 512.
-Result shown in Table~\ref{multi-head exp with pos encoding}.
-
 \begin{table}
     \caption{multi-head exp with pos encoding}
     \label{multi-head exp with pos encoding}
@@ -310,20 +321,16 @@ Result shown in Table~\ref{multi-head exp with pos encoding}.
     \end{tabular}
 \end{table}
 
-Comparing  Table~\ref{multi-head exp w/o pos encoding} and
-Table~\ref{multi-head exp with pos encoding},
-We found the metrics without positional encoding are
-better than with positional encoding one.
-So positional information might not a critical info in this scenario.
+\subsubsection{Num-Layers Experiment}
 
-Note that best performance appeared when nhead set to 8 with postional encoding.
-
-\subsubsection{num-layers exp w/o pos}
-
-We keep fixed all hyperprameters but
-changing num\_layers without positional encoding.
+Here all hyperprameters was fixed but num\_layers will be change.
 The dim\_feedforward was set to 512 and nhead was set to 1.
-Result shown in Table~\ref{num-layers exp w/o pos}.
+Table~\ref{num-layers exp w/o pos} and Table~\ref{num-layers exp with pos}
+shown the result without and with positional encoding respectively.
+
+We found that whether transformer encoder with positional encoding or not,
+it has similar trend that performance decreased as layers increased.
+And we found as layers increased, models's inference time also increased.
 
 \begin{table}
     \caption{num-layers exp w/o pos}
@@ -333,7 +340,7 @@ Result shown in Table~\ref{num-layers exp w/o pos}.
         \toprule
         AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
         \midrule
-        baseline & 52.82 & 18.3   & 25.93	-                 \\
+        baseline & 52.82 & 18.3   & 25.93   & -            \\
         layer=1  & 52.97 & 18.35  & 26      & 0.827164961  \\
         layer=2  & 52.72 & 18.41  & 25.93   & 0.41177067   \\
         layer=3  & 52.69 & 18.4   & 25.95   & 0.37745993   \\
@@ -344,14 +351,6 @@ Result shown in Table~\ref{num-layers exp w/o pos}.
         \bottomrule
     \end{tabular}
 \end{table}
-
-
-\subsubsection{num-layers exp with pos}
-
-Here, we keep fixed all hyperprameters but
-changing num\_layers with positional encoding.
-The dim\_feedforward was set to 512 and nhead was set to 1.
-Result shown in Table~\ref{num-layers exp with pos}.
 
 \begin{table}
     \caption{num-layers exp with pos}
@@ -373,19 +372,34 @@ Result shown in Table~\ref{num-layers exp with pos}.
     \end{tabular}
 \end{table}
 
-We found that whether transformer encoder with positional encoding or not,
-it has similar trend that performance decreased as layers increased.
-And we found as layers increased, models's inference time also increased.
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{CONCLUSION}
-None
-\vspace{2cm}
+
+In our experimets, no matter with postional encoding or not,
+the performance of MUTIHEADATTENTION is worse than GRU,
+although using MUTIHEADATTENTION is slightly fast.
+In muti-head experiment of TransformerEncoder,
+we found there is no distinct trend about num of head,
+also we found when TransformerEncoder stacking more layers,
+model's performance will decreased, this means the model is over-fitting,
+moreover, evaluate time will increased, this cause training time getting longer.
+
+After several experimets, we found that TransformerEncoder can improve
+model performance by replacing GRU in EOPA layer,
+but the parameter of TransformerEncoder need in proper setting.
+In SGAT and Readout layer, we tried to change the attention mechanisms,
+but we didn't got a good result.
+This might bacause attention mechanisms is dependent on model structure and data,
+it won't be useful if we just replace attention mechanisms from different paper.
+
+Finally the best result we got is when layer=1 and nhead=8
+with positional encoding, total improvement of three metrics is  1.08\%,
+althought there is still a space for improvements in this model.
+The result is a acceptable to us because we didn't change the model structure
+so much but just change a layer inside EOPA block.
+If we could modify SGAT and Readout layer's attention mechanisms
+to multi-head attention, we might get a better result.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
