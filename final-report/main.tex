@@ -17,7 +17,11 @@
 % to avoid loading the natbib package, add option nonatbib:
 %    \usepackage[nonatbib]{neurips_2021}
 
-\bibliographystyle{unsrtnat} % <----------- must add for natbib 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{unsrtnat} % <----------- must add for natbib\usepackage{graphicx}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -81,20 +85,204 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{INTORDUCTION}
-None
-\vspace{3cm}
+
+Due to the highly practical value,
+session-based recommendation attracted researchers’ great attention.
+Most of the methods proposed earlier are based on Markov chains or
+recurrent neural networks (RNNs). Recently, GNNs have become increasingly
+popular and achieved state-of-the-art performance in many tasks.
+There are also some attempts to apply GNNs to session-based recommendation.
+
+Although these GNN-based methods obtained exciting results and
+offered a new and promising direction for session-based recommendation,
+we observe that there are two information loss problems in these methods.
+The first information loss problem in the existing GNN-based methods
+is called the lossy session encoding problem.
+The second information loss problem is called the
+ineffective long-range dependency capturing problem where
+these GNN-based methods cannot effectively capture all long-range dependencies.
+
+To solve the above problems, author propose a novel GNN model called
+LESSR (Lossless Edge-order preserving aggregation
+and Shortcut graph attention for Session-based Recommendation).
+Through the structure of the original paper,
+we found that there are three places with GRU.
+We hope to increase the speed of the model by changing the part of GRU.
+We change GRU to attention,
+then change the model to Transformer,
+increase the number of layers and increase pos encoding,
+and finally see if the time and accuracy increase.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{RELAED WORK}
-None
-\vspace{3cm}
+
+A given input session is first converted to a losslessly encoded graph
+called edge-order preserving (EOP) multigraph and a shortcut graph
+where the EOP multigraph could address the lossy session encoding
+problem and the shortcut graph could address
+the ineffective long-range dependency capturing problem.
+Then, the graphs along with the item embeddings are passed
+to multiple edge-order preserving aggregation (EOPA)
+and shortcut graph attention (SGAT) layers
+to generate latent features of all nodes.
+The EOPA layers capture local context information using the EOP multigraph
+and the SGAT layers effectively capture long-range dependencies using
+the shortcut graph, and the architecture diagram is as figure~\ref{fig:lessr}.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.35]{lessr}
+    \caption{LESSR structure}
+    \label{fig:lessr}
+\end{figure}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{PRELIMINARY}
-None
-\vspace{3cm}
+
+\subsection{GRU}
+
+GRU (Gate Recurrent Unit) is a type of Recurrent Neural Network (RNN).
+It is proposed to solve the problems of long-term memory and
+gradients in back propagation.
+GRU input and output structure:
+The input-output structure of GRU is the same as that of ordinary RNN.
+There is a current input $x^t$ and the hidden state $h^{t-1}$ passed down
+from the previous node. This hidden state contains information
+about the previous node.
+The GRU structure as shown in figure~\ref{fig:gru}.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.6]{gru}
+    \caption{GRU structure}
+    \label{fig:gru}
+\end{figure}
+
+\subsection{Self-Attention}
+
+For self-attention, the three matrices Q(Query), K(Key), and V(Value) are
+all from the same input. First, we have to calculate the dot product
+between Q and K, and then in order to prevent the result
+from being too large, we will Divide by $\sqrt{d_k}$,
+then pass the basis activity function, and finally multiply by V,
+it can be expressed by the following formula~\ref{eq:attn}.
+
+\begin{equation}
+    \label{eq:attn}
+    Attention(Q,K,V)=softmax(\frac{QK^{T}}{\sqrt{d_{k}}})v
+\end{equation}
+
+And multihead means that we can have different Q, K, V representations,
+and finally combine the results.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{METHODOLOGY}
+
+\subsection{Transformer Encoder}
+
+In this section, we will introduce the structure of transformer encoder,
+which will be used to replace the GRU layer in EOPA
+in the following experiments.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.9]{tf}
+    \caption{Transformer structure}
+    \label{fig:tf}
+\end{figure}
+
+Each transformer encoder has two sub-layers.
+The first one is Multi-Head Attention layer,
+and the second one is a fully connected feed forward layer.
+After both layer, we employ residual connection layers and
+layer normalization layers. We will specific each layer later.
+The Transformer structure is shown in figure~\ref{fig:tf}.
+
+\subsection{Multi-Head Attention}
+
+The first one is the Multi-Head Attention layer.
+In this layer our goal is to get attention score from the graphs.
+In Multi-Head Attention layer, we have three groups of variables,
+Q, k, V, represent query, keys, value respectively.
+The number $i$ in these groups (ex: $Q\{q_1, q_2, \dots, q_i\}$)
+is decided by how many heads we use. After that,
+we will use the following formula to compute the attention weight,
+where $d_k$ represents vector dimensionality of k, v and
+Z represents final attention weight.
+The Multi-Head Attention structure is shown in figure~\ref{fig:multihead}.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.9]{multihead}
+    \caption{Multi-Head Attention}
+    \label{fig:multihead}
+\end{figure}
+
+\subsection{Add \& Norm}
+
+In these layers we use residual connection and layers normalization to
+help our model training. With residual connection,
+we can let gradient flow directive through the network,
+preventing gradient vanishing. As for layers normalization,
+it’s effective at stabling the hidden state dynamic our model.
+In mathematical definition, residual connection can be simply denoted
+by the following formula~\ref{eq:residual}.
+
+\begin{equation}
+    \label{eq:residual}
+    add(x)=x+sublayer(x)
+\end{equation}
+
+On the other hand, layers normalization is much complex.
+Assume we give input x over a mini batch size of m,
+which is $B={x_1, x_2, \ldots, x_m}$. Each sample x contain K elements.
+We first compute the mean and variance of each sample x,
+denoted by the following formula~\ref{eq:mu}.
+
+\begin{equation}
+    \label{eq:mu}
+    \mu_i=
+    \frac{1}{K}\Sigma x_{i,k}\sigma_i^2=
+    \frac{1}{K}\Sigma{{(x}_{i,k}-\mu_i)}^2
+\end{equation}
+
+Then we normalize each sample such that the elements in the sample
+have zero mean and unit variance as formula~\ref{eq:norm}.
+$\epsilon$ is for numerical stability
+in case the denominator becomes zero by chance.
+
+\begin{equation}
+    \label{eq:norm}
+    x_{i,k}=\frac{{(x}_{i,k}-\mu_i)}{\sqrt{\sigma_i^2-\epsilon}}
+\end{equation}
+
+Combining these two layers we simplify its as formula~\ref{eq:layernorm}
+
+\begin{equation}
+    \label{eq:layernorm}
+    \textrm{LayerNorm}\left(x+\textrm{sublayer}(x)\right)
+\end{equation}
+
+Recall that sublayers is Multi-Head Attention and feed forward network.
+
+\subsection{Feedforward Network}
+
+In addition to attend sub-layers,
+we employ a fully connected feed-forward network
+shown as formula~\ref{eq:ffn} in our encoder.
+This consist of two linear transformation with a ReLU activation function.
+
+\begin{equation}
+    \label{eq:ffn}
+    \textrm{FFN}\left(x\right)=\max{\left(0,xW_1+b_1\right)}W_2+b_2
+\end{equation}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,7 +291,7 @@ None
 
 In this section, we will introduce experiment setting,
 dataset, and analyze the experiment result.
-We conducted several experiments to check out hypotheses and evaluate our
+We conducted several experiments to check our hypotheses and evaluate our
 model with choosen metric.
 
 \subsection{Dataset}
@@ -135,7 +323,7 @@ Statistics of Diginetica dataset is shown in Table~\ref{data-stats}.
 
 \subsection{Baseline and metrics}
 
-We choose \cite{chen2020lessr} as out baseline,
+We choose \cite{chen2020lessr} as out baseline model,
 then we tried to improve model structure in \cite{chen2020lessr} by some changes.
 Comparing the metrics to \cite{chen2020lessr},
 we could know the change is postive or negative influence.
