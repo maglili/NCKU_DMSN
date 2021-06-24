@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.22)  24 JUN 2021 00:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.6.22)  24 JUN 2021 14:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -448,18 +448,18 @@ Package pdftex.def Info: images//multihead.png  used on input line 222.
 (pdftex.def)             Requested size: 136.86235pt x 140.02419pt.
  [3 <./images//tf.png> <./images//multihead.png>] [4] [5] [6] [7] (./main.bbl) [8] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 260DEE81121838852091FAD7D687FA66;2549.
+(rerunfilecheck)             Checksum: E8EBAD43BCE72691FEA22D79809419E1;2554.
  ) 
 Here is how much of TeX's memory you used:
  11643 strings out of 478510
  175754 string characters out of 5851081
- 534708 words of memory out of 5000000
+ 534709 words of memory out of 5000000
  29218 multiletter control sequences out of 15000+600000
  440792 words of font info for 163 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  72i,9n,80p,298b,362s stack positions out of 5000i,500n,10000p,200000b,80000s
 {e:/APPS/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}{e:/APPS/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}<e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><e:/APPS/texlive/2021/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (8 pages, 362266 bytes).
+Output written on main.pdf (8 pages, 362203 bytes).
 PDF statistics:
  268 PDF objects out of 1000 (max. 8388607)
  226 compressed objects within 3 object streams
