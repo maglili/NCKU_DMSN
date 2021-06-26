@@ -17,12 +17,27 @@
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \bibstyle{unsrtnat}
+\citation{chen2020lessr}
+\citation{4700287}
+\citation{chung2014empirical}
+\citation{chen2020lessr}
+\citation{chung2014empirical}
+\citation{vaswani2017attention}
+\citation{vaswani2017attention}
+\citation{chen2020lessr}
+\citation{chung2014empirical}
+\citation{vaswani2017attention}
+\citation{4700287}
+\citation{chen2020lessr}
+\citation{vaswani2017attention}
+\citation{vaswani2017attention}
 \@writefile{toc}{\contentsline {section}{\numberline {1}INTRODUCTION}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}RELATED WORK}{1}{section.2}\protected@file@percent }
+\citation{vaswani2017attention}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces LESSR structure}}{2}{figure.1}\protected@file@percent }
 \newlabel{fig:lessr}{{1}{2}{LESSR structure}{figure.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces GRU structure}}{2}{figure.2}\protected@file@percent }
-\newlabel{fig:gru}{{2}{2}{GRU structure}{figure.2}{}}
+\newlabel{fig:GRU}{{2}{2}{GRU structure}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}RELATED WORK}{2}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}PRELIMINARY}{2}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}GRU}{2}{subsection.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Self-Attention}{2}{subsection.3.2}\protected@file@percent }
@@ -37,11 +52,6 @@
 \citation{chen2020lessr}
 \citation{chen2020lessr}
 \citation{chen2020lessr}
-\citation{chen2020lessr}
-\citation{chen2020lessr}
-\citation{chen2020lessr}
-\citation{chen2020lessr}
-\citation{chen2020lessr}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Add \& Norm}{4}{subsection.4.3}\protected@file@percent }
 \newlabel{eq:residual}{{2}{4}{Add \& Norm}{equation.4.2}{}}
 \newlabel{eq:mu}{{3}{4}{Add \& Norm}{equation.4.3}{}}
@@ -49,33 +59,60 @@
 \newlabel{eq:layernorm}{{5}{4}{Add \& Norm}{equation.4.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Feedforward Network}{4}{subsection.4.4}\protected@file@percent }
 \newlabel{eq:ffn}{{6}{4}{Feedforward Network}{equation.4.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Positional Encoding}{4}{subsection.4.5}\protected@file@percent }
+\newlabel{eq:pos_encoding_1}{{7}{4}{Positional Encoding}{equation.4.7}{}}
+\newlabel{eq:pos_encoding_2}{{8}{4}{Positional Encoding}{equation.4.8}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}EXPERIMENTS}{4}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Dataset}{4}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Baseline and metrics}{4}{subsection.5.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces statistics of dataset}}{5}{table.1}\protected@file@percent }
-\newlabel{data-stats}{{1}{5}{statistics of dataset}{table.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Multi-head w/o pos encoding}}{5}{table.2}\protected@file@percent }
-\newlabel{Multi-head w/o pos encoding}{{2}{5}{Multi-head w/o pos encoding}{table.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}MUTIHEADATTENTION layer}{5}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}TransformerEncoder layer}{5}{subsection.5.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Multi-head with pos encoding}}{5}{table.3}\protected@file@percent }
-\newlabel{Multi-head with pos encoding}{{3}{5}{Multi-head with pos encoding}{table.3}{}}
+\citation{chen2020lessr}
+\citation{chen2020lessr}
+\citation{chen2020lessr}
+\citation{chen2020lessr}
+\citation{chen2020lessr}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Positional Encoding}}{5}{figure.5}\protected@file@percent }
+\newlabel{fig:pos_encoding}{{5}{5}{Positional Encoding}{figure.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Statistics of dataset}}{5}{table.1}\protected@file@percent }
+\newlabel{data-stats}{{1}{5}{Statistics of dataset}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Dataset}{5}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Baseline and metrics}{5}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}MultiheadAttention layer layer}{5}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Multi-head w/o pos encoding}}{6}{table.2}\protected@file@percent }
+\newlabel{Multi-head w/o pos encoding}{{2}{6}{Multi-head w/o pos encoding}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Multi-head with pos encoding}}{6}{table.3}\protected@file@percent }
+\newlabel{Multi-head with pos encoding}{{3}{6}{Multi-head with pos encoding}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}TransformerEncoder layer}{6}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Dim\_Feedforward Experiment}{6}{subsubsection.5.4.1}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces dim exp w/o pos encoding}}{6}{table.4}\protected@file@percent }
 \newlabel{dim exp w/o pos encoding}{{4}{6}{dim exp w/o pos encoding}{table.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces dim exp with pos encoding}}{6}{table.5}\protected@file@percent }
-\newlabel{dim exp with pos encoding}{{5}{6}{dim exp with pos encoding}{table.5}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Dim\_Feedforward Experiment}{6}{subsubsection.5.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Multi-Head Experiment}{6}{subsubsection.5.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces multi-head exp w/o pos encoding}}{6}{table.6}\protected@file@percent }
-\newlabel{multi-head exp w/o pos encoding}{{6}{6}{multi-head exp w/o pos encoding}{table.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces dim exp with pos encoding}}{7}{table.5}\protected@file@percent }
+\newlabel{dim exp with pos encoding}{{5}{7}{dim exp with pos encoding}{table.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces multi-head exp w/o pos encoding}}{7}{table.6}\protected@file@percent }
+\newlabel{multi-head exp w/o pos encoding}{{6}{7}{multi-head exp w/o pos encoding}{table.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Multi-Head Experiment}{7}{subsubsection.5.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.3}Num-Layers Experiment}{7}{subsubsection.5.4.3}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces multi-head exp with pos encoding}}{7}{table.7}\protected@file@percent }
 \newlabel{multi-head exp with pos encoding}{{7}{7}{multi-head exp with pos encoding}{table.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces num-layers exp w/o pos}}{7}{table.8}\protected@file@percent }
-\newlabel{num-layers exp w/o pos}{{8}{7}{num-layers exp w/o pos}{table.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.3}Num-Layers Experiment}{7}{subsubsection.5.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}CONCLUSION}{7}{section.6}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces num-layers exp with pos}}{7}{table.9}\protected@file@percent }
-\newlabel{num-layers exp with pos}{{9}{7}{num-layers exp with pos}{table.9}{}}
+\citation{chen2020lessr}
+\citation{chen2020lessr}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces num-layers exp w/o pos}}{8}{table.8}\protected@file@percent }
+\newlabel{num-layers exp w/o pos}{{8}{8}{num-layers exp w/o pos}{table.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces num-layers exp with pos}}{8}{table.9}\protected@file@percent }
+\newlabel{num-layers exp with pos}{{9}{8}{num-layers exp with pos}{table.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Multi-Head Attention + EOPA layer}{8}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Readout Layer Exploration}{8}{subsection.5.6}\protected@file@percent }
+\newlabel{eq:h_G}{{9}{8}{Readout Layer Exploration}{equation.5.9}{}}
+\newlabel{eq:beta}{{10}{8}{Readout Layer Exploration}{equation.5.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces MULTI-HEAD ATTENTION PLUS GRU}}{8}{table.10}\protected@file@percent }
+\newlabel{tab:MULTI-HEAD ATTENTION PLUS GRU}{{10}{8}{MULTI-HEAD ATTENTION PLUS GRU}{table.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Setting 1 to 7}}{9}{table.11}\protected@file@percent }
+\newlabel{tab:setting}{{11}{9}{Setting 1 to 7}{table.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces READOUT ATTENTION}}{9}{table.12}\protected@file@percent }
+\newlabel{tab:set_{result}}{{12}{9}{READOUT ATTENTION}{table.12}{}}
+\newlabel{eq:epsilon_{i}}{{11}{9}{Readout Layer Exploration}{equation.5.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}SGAT Layer Exploration}{9}{subsection.5.7}\protected@file@percent }
 \bibdata{refer}
 \bibcite{chen2020lessr}{{1}{2020}{{{Chen} and {Wong}}}{{}}}
-\gdef \@abspage@last{8}
+\bibcite{4700287}{{2}{2009}{{Scarselli et~al.}}{{Scarselli, Gori, Tsoi, Hagenbuchner, and Monfardini}}}
+\bibcite{chung2014empirical}{{3}{2014}{{Chung et~al.}}{{Chung, Gulcehre, Cho, and Bengio}}}
+\bibcite{vaswani2017attention}{{4}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}CONCLUSION}{10}{section.6}\protected@file@percent }
+\gdef \@abspage@last{10}

@@ -21,6 +21,8 @@
 \bibliographystyle{unsrtnat} % <----------- must add for natbib\usepackage{graphicx}
 \usepackage{graphicx}
 \graphicspath{{images/}}
+\usepackage{bm}
+\usepackage{siunitx}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
@@ -33,7 +35,7 @@
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
 
-\title{DMSN final project: Improve LESSR model structure}
+\title{DMSN Final Project: Improve LESSR Model Structure}
 
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
@@ -43,27 +45,29 @@
 % authors names on the first line, and the last on the second line, try using
 % \AND instead of \And before the third author name.
 
+\newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
+
 \author{%
-  TENG, LI-CHANG\\
+  LI-CHANG TENG\thanks{Equal contribution. Listing order is random.}\\
   Department of Electrical Engineering\\
   National Cheng Kung University\\
   \texttt{n26091194@gs.ncku.edu.tw} \\
   % examples of more authors
   \And
-  TENG, LI-CHANG\\
+  TZU-JIUN SU\samethanks\\
   Department of Electrical Engineering\\
   National Cheng Kung University\\
-  \texttt{n26091194@gs.ncku.edu.tw} \\
+  \texttt{n26100359@gs.ncku.edu.tw} \\
   \AND
-  TENG, LI-CHANG\\
+  GUAN-RU CHEN\samethanks\\
   Department of Electrical Engineering\\
   National Cheng Kung University\\
-  \texttt{n26091194@gs.ncku.edu.tw} \\
+  \texttt{n26091136@gs.ncku.edu.tw} \\
   \And
-  TENG, LI-CHANG\\
+  SHIH-FU SONG\samethanks\\
   Department of Electrical Engineering\\
   National Cheng Kung University\\
-  \texttt{n26091194@gs.ncku.edu.tw} \\
+  \texttt{n26092116@gs.ncku.edu.tw} \\
 %   \And
 %   Coauthor \\
 %   Affiliation \\
@@ -78,8 +82,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-    None
-    \vspace{2cm}
+    In our final project, we tried to improve performance of LESSR\cite{chen2020lessr},
+    which is a session-based recommendation model based on Graph Neural Networks(GNNs)\cite{4700287}.
+    We found there is a GRU\cite{chung2014empirical} layer in EOPA layer in LESSR\cite{chen2020lessr}.
+    Because GRU\cite{chung2014empirical} has a problem with parallel processing,
+    here we tried to replace it by 1) self-attention\cite{vaswani2017attention}
+    2) Transformer Encoder\cite{vaswani2017attention} to handle this problem.
+    In experiments section, we conducted multi-head experiment for self-attention,
+    and 1) feed-forward dimension 2) multi-head 3) number of layers experiments
+    for Transformer due to it has more parameters than self-attention.
+    Also we tried different attention mechanisms in SGAT layer
+    and Readout layer in LESSR\cite{chen2020lessr}.
+    Finally, we found that replacing GRU\cite{chung2014empirical} by TransformerEncoder\cite{vaswani2017attention}
+    could increase performance in HR, MRR, NDCG metrics.
+    The best result of total(sum) improvement in 3 metric is up to 1.03\%
+    without grid search hyperprameters turning.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,9 +106,10 @@
 Due to the highly practical value,
 session-based recommendation attracted researchers’ great attention.
 Most of the methods proposed earlier are based on Markov chains or
-recurrent neural networks (RNNs). Recently, GNNs have become increasingly
-popular and achieved state-of-the-art performance in many tasks.
-There are also some attempts to apply GNNs to session-based recommendation.
+recurrent neural networks (RNNs). Recently, Graph Neural Networks(GNNs)\cite{4700287}
+have become increasingly popular and achieved state-of-the-art performance
+in many tasks. There are also some attempts to apply GNNs
+to session-based recommendation.
 
 Although these GNN-based methods obtained exciting results and
 offered a new and promising direction for session-based recommendation,
@@ -104,12 +122,12 @@ these GNN-based methods cannot effectively capture all long-range dependencies.
 
 To solve the above problems, author propose a novel GNN model called
 LESSR (Lossless Edge-order preserving aggregation
-and Shortcut graph attention for Session-based Recommendation).
+and Shortcut graph attention for Session-based Recommendation)\cite{chen2020lessr}.
 Through the structure of the original paper,
-we found that there are three places with GRU.
+we found that there are one places with GRU and two place with attention mechanism.
 We hope to increase the speed of the model by changing the part of GRU.
-We change GRU to attention,
-then change the model to Transformer,
+We first change GRU to self-attention\cite{vaswani2017attention},
+then change the model to Transformer\cite{vaswani2017attention},
 increase the number of layers and increase pos encoding,
 and finally see if the time and accuracy increase.
 
@@ -154,18 +172,18 @@ The input-output structure of GRU is the same as that of ordinary RNN.
 There is a current input $x^t$ and the hidden state $h^{t-1}$ passed down
 from the previous node. This hidden state contains information
 about the previous node.
-The GRU structure as shown in figure~\ref{fig:gru}.
+The GRU structure as shown in figure~\ref{fig:GRU}.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.5]{gru}
+    \includegraphics[scale=0.5]{GRU}
     \caption{GRU structure}
-    \label{fig:gru}
+    \label{fig:GRU}
 \end{figure}
 
 \subsection{Self-Attention}
 
-For self-attention, the three matrices Q(Query), K(Key), and V(Value) are
+For self-attention\cite{vaswani2017attention}, the three matrices Q(Query), K(Key), and V(Value) are
 all from the same input. First, we have to calculate the dot product
 between Q and K, and then in order to prevent the result
 from being too large, we will Divide by $\sqrt{d_k}$,
@@ -174,7 +192,7 @@ it can be expressed by the following formula~\ref{eq:attn}.
 
 \begin{equation}
     \label{eq:attn}
-    Attention(Q,K,V)=softmax(\frac{QK^{T}}{\sqrt{d_{k}}})v
+    \textrm{Attention}(Q,K,V)=\textrm{softmax}(\frac{QK^{T}}{\sqrt{d_{k}}})v
 \end{equation}
 
 And multi-head means that we can have different Q, K, V representations,
@@ -236,7 +254,7 @@ by the following formula~\ref{eq:residual}.
 
 \begin{equation}
     \label{eq:residual}
-    add(x)=x+sublayer(x)
+    \textrm{add}(x)=x+\textrm{sublayer}(x)
 \end{equation}
 
 On the other hand, layers normalization is much complex.
@@ -283,7 +301,44 @@ This consist of two linear transformation with a ReLU activation function.
     \textrm{FFN}\left(x\right)=\max{\left(0,xW_1+b_1\right)}W_2+b_2
 \end{equation}
 
+\subsection{Positional Encoding}
 
+Since we change the original GRU to Transformer Encoder,
+which contains no recurrence. That is to say,
+we lost the time information of our graph datasets.
+In order to solve this problem,
+we use a technique called “Positional Encoding” to help us
+to regain those information back. More specifically,
+we inject a Positional Encoding matrix,
+which has the same dimension as the input embedding,
+so we can sum them and inject the specific time information
+to corresponding data.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.6]{pos}
+    \caption{Positional Encoding}
+    \label{fig:pos_encoding}
+\end{figure}
+
+As shown in Figure~\ref{fig:pos_encoding},
+every column of the matrix represents a unique time,
+so by concatenating this to the embedding we are able
+to handle time information while using self-attention
+and Transformer Encoder. The positional encoding formulas shown in following:
+
+\begin{equation}
+    \label{eq:pos_encoding_1}
+    \textrm{PE}_(\textrm{pos},2i) = \sin(\frac{\textrm{pos}}{10000^(2_i/d_{model})})
+\end{equation}
+
+\begin{equation}
+    \label{eq:pos_encoding_2}
+    \textrm{PE}_(\textrm{pos},2i+1) = \cos(\frac{\textrm{pos}}{10000^(2_i/d_{model})})
+\end{equation}
+
+Where $d_{model}$ represents that embedding dimension,
+and pos is the position.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -306,7 +361,7 @@ described in \cite{chen2020lessr}.
 Statistics of Diginetica dataset is shown in Table~\ref{data-stats}.
 
 \begin{table}
-    \caption{statistics of dataset}
+    \caption{Statistics of dataset}
     \label{data-stats}
     \centering
     \begin{tabular}{ll}
@@ -330,18 +385,18 @@ we could know the change is positive or negative influence.
 Following \cite{chen2020lessr},
 the metrics we used are HR@20 (Hit Rate) and MRR@20 (Mean Reciprocal Rank).
 
-\subsection{MUTIHEADATTENTION layer}
+\subsection{MultiheadAttention layer layer}
 
-MUTIHEADATTENTION\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html}}
+MultiheadAttention layer\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention layer.html}}
 is a official implemented self-attention layer by pytorch.
 Here we replace GRU\footnote{\url{https://pytorch.org/docs/stable/generated/torch.nn.GRU.html}}
-layer in EOPA block in \cite{chen2020lessr} by MUTIHEADATTENTION layer.
-All settings are the same but GRU now replaced by MUTIHEADATTENTION.
-We adjusted num of heads parameter in MUTIHEADATTENTION layer
+layer in EOPA block in \cite{chen2020lessr} by MultiheadAttention layer layer.
+All settings are the same but GRU now replaced by MultiheadAttention layer.
+We adjusted num of heads parameter in MultiheadAttention layer layer
 to see the influence of multi-head attention.
 
 The pytorch official did not implemented positional encoding in
-MUTIHEADATTENTION layer, so there is no position information within layer.
+MultiheadAttention layer layer, so there is no position information within layer.
 To handle this problem we need to do position encoding manually.
 We found a official tutorial\footnote{\url{https://pytorch.org/tutorials/beginner/transformer_tutorial.html}}
 that manually implemented position encoding,
@@ -358,15 +413,15 @@ So in next section we decided to using more complex layer.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline & 52.82 & 18.3   & 25.93   & -            \\
-        Head=1   & 52.65 & 18.25  & 25.85   & -0.903594775 \\
-        Head=2   & 52.58 & 18.27  & 25.84   & -0.965396084 \\
-        Head=4   & 52.6  & 18.28  & 25.85   & -0.834321462 \\
-        Head=8   & 52.63 & 18.28  & 25.87   & -0.700394057 \\
-        Head=16  & 52.62 & 18.28  & 25.86   & -0.757891648 \\
-        Head=32  & 52.64 & 18.29  & 25.87   & -0.626817026 \\
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        Head=1   & 52.65 & 18.25  & 25.85   & -0.90       \\
+        Head=2   & 52.58 & 18.27  & 25.84   & -0.97       \\
+        Head=4   & 52.6  & 18.28  & 25.85   & -0.83       \\
+        Head=8   & 52.63 & 18.28  & 25.87   & -0.70       \\
+        Head=16  & 52.62 & 18.28  & 25.86   & -0.76       \\
+        Head=32  & 52.64 & 18.29  & 25.87   & -0.63       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -377,15 +432,15 @@ So in next section we decided to using more complex layer.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline & 52.82 & 18.3   & 25.93   & -            \\
-        Head=1   & 52.57 & 18.26  & 25.83   & -1.077538484 \\
-        Head=2   & 52.55 & 18.29  & 25.85   & -0.874337766 \\
-        Head=4   & 52.59 & 18.3   & 25.88   & -0.628267962 \\
-        Head=8   & 52.62 & 18.29  & 25.87   & -0.664681471 \\
-        Head=16  & 52.54 & 18.31  & 25.86   & -0.745415003 \\
-        Head=32  & 52.57 & 18.32  & 25.89   & -0.518277422 \\
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        Head=1   & 52.57 & 18.26  & 25.83   & -1.08       \\
+        Head=2   & 52.55 & 18.29  & 25.85   & -0.87       \\
+        Head=4   & 52.59 & 18.3   & 25.88   & -0.63       \\
+        Head=8   & 52.62 & 18.29  & 25.87   & -0.66       \\
+        Head=16  & 52.54 & 18.31  & 25.86   & -0.75       \\
+        Head=32  & 52.57 & 18.32  & 25.89   & -0.52       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -419,17 +474,17 @@ so we choose dimension 512 for our model in the later experiments.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline   & 52.82 & 18.3   & 25.93   & -            \\
-        Dim = 2048 & 52.73 & 18.25  & 25.83   & -0.82926773  \\
-        Dim = 1024 & 52.9  & 18.31  & 25.86   & -0.063854988 \\
-        Dim = 512  & 52.97 & 18.35  & 26      & 0.827164961  \\
-        Dim = 256  & 52.67 & 18.28  & 25.88   & -0.586099799 \\
-        Dim = 128  & 52.88 & 18.34  & 25.94   & 0.370737939  \\
-        Dim = 64   & 52.84 & 18.39  & 26.01   & 0.83819067   \\
-        Dim = 32   & 52.7  & 18.24  & 25.85   & -0.863578471 \\
-        Dim = 16   & 52.68 & 18.3   & 25.88   & -0.457877958 \\
+        baseline   & 52.82 & 18.3   & 25.93   & -           \\
+        Dim = 2048 & 52.73 & 18.25  & 25.83   & -0.83       \\
+        Dim = 1024 & 52.9  & 18.31  & 25.86   & -0.06       \\
+        Dim = 512  & 52.97 & 18.35  & 26      & 0.83        \\
+        Dim = 256  & 52.67 & 18.28  & 25.88   & -0.59       \\
+        Dim = 128  & 52.88 & 18.34  & 25.94   & 0.37        \\
+        Dim = 64   & 52.84 & 18.39  & 26.01   & 0.84        \\
+        Dim = 32   & 52.7  & 18.24  & 25.85   & -0.86       \\
+        Dim = 16   & 52.68 & 18.3   & 25.88   & -0.46       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -440,17 +495,17 @@ so we choose dimension 512 for our model in the later experiments.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE   & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline   & 52.82 & 18.3   & 25.93   & -            \\
-        Dim = 2048 & 52.74 & 18.28  & 25.88   & -0.45357424  \\
-        Dim = 1024 & 52.86 & 18.3   & 25.88   & -0.117097951 \\
-        Dim = 512  & 52.85 & 18.36  & 25.97   & 0.538926994  \\
-        Dim = 256  & 52.7  & 18.26  & 25.86   & -0.715723485 \\
-        Dim = 128  & 52.89 & 18.37  & 25.95   & 0.592169956  \\
-        Dim = 64   & 52.79 & 18.34  & 25.95   & 0.238913304  \\
-        Dim = 32   & 52.74 & 18.29  & 25.9    & -0.321798695 \\
-        Dim = 16   & 52.6  & 18.36  & 25.92   & -0.127205414 \\
+        baseline   & 52.82 & 18.3   & 25.93   & -           \\
+        Dim = 2048 & 52.74 & 18.28  & 25.88   & -0.45       \\
+        Dim = 1024 & 52.86 & 18.3   & 25.88   & -0.12       \\
+        Dim = 512  & 52.85 & 18.36  & 25.97   & 0.54        \\
+        Dim = 256  & 52.7  & 18.26  & 25.86   & -0.72       \\
+        Dim = 128  & 52.89 & 18.37  & 25.95   & 0.59        \\
+        Dim = 64   & 52.79 & 18.34  & 25.95   & 0.24        \\
+        Dim = 32   & 52.74 & 18.29  & 25.9    & -0.32       \\
+        Dim = 16   & 52.6  & 18.36  & 25.92   & -0.13       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -480,12 +535,12 @@ Note that best performance appeared when nhead set to 8 with positional encoding
         AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
         baseline & 52.82 & 18.3   & 25.93   & -           \\
-        nhead=1  & 52.97 & 18.35  & 26      & 0.827164961 \\
-        nhead=2  & 52.77 & 18.37  & 25.95   & 0.364983285 \\
-        nhead=4  & 52.98 & 18.35  & 26      & 0.846097184 \\
-        nhead=8  & 52.87 & 18.37  & 25.96   & 0.592870879 \\
-        nhead=16 & 52.78 & 18.37  & 25.97   & 0.461046244 \\
-        nhead=32 & 52.92 & 18.41  & 25.97   & 0.944676596 \\
+        nhead=1  & 52.97 & 18.35  & 26      & 0.83        \\
+        nhead=2  & 52.77 & 18.37  & 25.95   & 0.36        \\
+        nhead=4  & 52.98 & 18.35  & 26      & 0.85        \\
+        nhead=8  & 52.87 & 18.37  & 25.96   & 0.59        \\
+        nhead=16 & 52.78 & 18.37  & 25.97   & 0.46        \\
+        nhead=32 & 52.92 & 18.41  & 25.97   & 0.95        \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -499,12 +554,12 @@ Note that best performance appeared when nhead set to 8 with positional encoding
         AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
         baseline & 52.82 & 18.3   & 25.93   & -           \\
-        nhead=1  & 52.85 & 18.36  & 25.97   & 0.538926994 \\
-        nhead=2  & 52.7  & 18.31  & 25.91   & -0.2496726  \\
-        nhead=4  & 52.88 & 18.38  & 25.98   & 0.743578647 \\
-        nhead=8  & 52.87 & 18.41  & 26.03   & 1.081407692 \\
-        nhead=16 & 52.82 & 18.35  & 25.96   & 0.388920149 \\
-        nhead=32 & 52.75 & 18.35  & 25.95   & 0.217829222 \\
+        nhead=1  & 52.85 & 18.36  & 25.97   & 0.54        \\
+        nhead=2  & 52.7  & 18.31  & 25.91   & -0.25       \\
+        nhead=4  & 52.88 & 18.38  & 25.98   & 0.74        \\
+        nhead=8  & 52.87 & 18.41  & 26.03   & 1.08        \\
+        nhead=16 & 52.82 & 18.35  & 25.96   & 0.39        \\
+        nhead=32 & 52.75 & 18.35  & 25.95   & 0.22        \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -526,16 +581,16 @@ And we found as layers increased, model's inference time also increased.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline & 52.82 & 18.3   & 25.93   & -            \\
-        layer=1  & 52.97 & 18.35  & 26      & 0.827164961  \\
-        layer=2  & 52.72 & 18.41  & 25.93   & 0.41177067   \\
-        layer=3  & 52.69 & 18.4   & 25.95   & 0.37745993   \\
-        layer=4  & 52.69 & 18.33  & 25.89   & -0.236445941 \\
-        layer=6  & 52.65 & 18.13  & 25.72   & -2.060682268 \\
-        layer=8  & 52.24 & 17.96  & 25.48   & -4.691433984 \\
-        layer=16 & 52.11 & 17.77  & 25.34   & -6.515719401 \\
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        layer=1  & 52.97 & 18.35  & 26      & 0.83        \\
+        layer=2  & 52.72 & 18.41  & 25.93   & 0.41        \\
+        layer=3  & 52.69 & 18.4   & 25.95   & 0.38        \\
+        layer=4  & 52.69 & 18.33  & 25.89   & -0.24       \\
+        layer=6  & 52.65 & 18.13  & 25.72   & -2.06       \\
+        layer=8  & 52.24 & 17.96  & 25.48   & -4.69       \\
+        layer=16 & 52.11 & 17.77  & 25.34   & -6.52       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -546,27 +601,184 @@ And we found as layers increased, model's inference time also increased.
     \centering
     \begin{tabular}{lllll}
         \toprule
-        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv.  \\
+        AGG.TYPE & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
         \midrule
-        baseline & 52.82 & 18.3   & 25.93   & -            \\
-        layer=1  & 52.85 & 18.36  & 25.97   & 0.538926994  \\
-        layer=2  & 52.77 & 18.41  & 25.96   & 0.622127888  \\
-        layer=3  & 52.72 & 18.34  & 25.88   & -0.163569833 \\
-        layer=4  & 52.84 & 18.32  & 25.9    & 0.031457958  \\
-        layer=6  & 52.8  & 18.18  & 25.78   & -1.272082675 \\
-        layer=8  & 52.3  & 17.95  & 25.46   & -4.709616194 \\
-        layer=16 & 52.04 & 17.81  & 25.37   & -6.313969619 \\
+        baseline & 52.82 & 18.3   & 25.93   & -           \\
+        layer=1  & 52.85 & 18.36  & 25.97   & 0.54        \\
+        layer=2  & 52.77 & 18.41  & 25.96   & 0.62        \\
+        layer=3  & 52.72 & 18.34  & 25.88   & -0.16       \\
+        layer=4  & 52.84 & 18.32  & 25.9    & 0.03        \\
+        layer=6  & 52.8  & 18.18  & 25.78   & -1.27       \\
+        layer=8  & 52.3  & 17.95  & 25.46   & -4.71       \\
+        layer=16 & 52.04 & 17.81  & 25.37   & -6.31       \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+\subsection{Multi-Head Attention + EOPA layer}
+After changing GRU to another network, we comprehended more methods trying to
+surpass the baseline.We figured out to concatenate networks orderly
+rather than replacing it.
+Then, the results showed as Table~\ref{tab:MULTI-HEAD ATTENTION PLUS GRU}.
+Beyond our expectations,
+we thought the results would turn out to be better as head numbers count up.
+
+\begin{table}
+    \caption{MULTI-HEAD ATTENTION PLUS GRU}
+    \label{tab:MULTI-HEAD ATTENTION PLUS GRU}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        AGG.TYPE  & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
+        \midrule
+        baseline  & 52.82 & 18.3   & 25.93   & -           \\
+        Head = 1  & 52.39 & 17.93  & 25.52   & -4.22       \\
+        Head = 2  & 52.42 & 17.94  & 25.55   & -3.99       \\
+        Head = 4  & 52.46 & 17.96  & 25.56   & -3.77       \\
+        Head = 8  & 52.47 & 17.97  & 25.59   & -3.58       \\
+        Head = 16 & 52.46 & 18.00  & 25.59   & -3.44       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Readout Layer Exploration}
+Above all of experiments, we only focus on EOPA layer,
+but there are three of layers which can be changed using Self-Attention.
+The two of last layers are Readout and SGAT layer.
+In this section, we want to discuss how can we do with Readout layer.
+According to the \cite{chen2020lessr},
+readout layer computes a graph-level representation by aggregating node
+representations using the attention mechanism.
+\cite{chen2020lessr} let $X_{last}^{(L)}$ denote
+the final node representation of the last item in the session.
+The graph-level representation $h_G$ is defined as follows:
+
+\begin{equation}
+    \label{eq:h_G}
+    h_G = \sum_{i \in V}\beta_{i}X_{i}^{(L)}
+\end{equation}
+
+\begin{equation}
+    \label{eq:beta}
+    \beta = softmax(\epsilon)
+\end{equation}
+
+\begin{equation}
+    \label{eq:epsilon_{i}}
+    \epsilon_{i} = q^{T}\sigma(W_1x_i^{L} + W_2x_{last}^{L} + r)
+\end{equation}
+
+where $q,r \in R^d$ and $W_1,W_2 \in R^{d \times d}$ are learnable parameters.
+
+Apparently, we are able to revise the eqn.
+\ref{eq:h_G} to \ref{eq:epsilon_{i}} because
+the mechanism of combining two features is the sign of '+'.
+As the consequence, changing mechanism with their own built model
+is our next topic to discover.
+There are lots of things we can do about the model,
+but one constraint is numbers of dimension.
+Except that changing the mechanism,
+the activation function and linear transformation are
+two main methods we choose to use in the model.
+Table~\ref{tab:setting} below is the 7 settings we modify
+in the function and Table~\ref{tab:set_{result}}
+is the results after modifying.
+
+\begin{table}
+    \caption{Setting 1 to 7}
+    \label{tab:setting}
+    \centering
+    \begin{tabular}{llll}
+        \toprule
+        Setting counts & Mechanism of Attention                                                          \\
+        \midrule
+        Original       & $\epsilon_{i} = q^{T}\sigma(W_1x_i^{L} + W_2x_{last}^{L} + r)$                  \\
+        Setting 1      & $\epsilon_{i} = q^{T}\sigma(W_1x_i^{L} \odot W_2x_{last}^{L} + r)$              \\
+        Setting 2      & $\epsilon_{i} = q^{T}\textbf{tanh}(W_1x_i^{L} + W_2x_{last}^{L} + r)$           \\
+        Setting 3      & $\epsilon_{i} = q^{T}W_3([(W_1x_i^{L} + r)||(W_2x_{last}^{L})])$                \\
+        Setting 4      & $\epsilon_{i} = q^{T}\textbf{tanh}(W_3([(W_1x_i^{L} + r)||(W_2x_{last}^{L})]))$ \\
+        Setting 5      & setting 4 with $h_G = \sum_{i \in V}\beta_{i}\bm{W_{v}}X_{i}^{(L)}$             \\
+        Setting 6      & $\epsilon_{i} = q^{T}\textbf{tanh}(W_1x_i^{L} + W_2x_{last}^{L} + r)$           \\
+        Setting 7      & setting 6 with $h_G = \sum_{i \in V}\beta_{i}\bm{W_{v}}X_{i}^{(L)}$             \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}
+    \caption{READOUT ATTENTION}
+    \label{tab:set_{result}}
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        baseline  & HR@20 & MRR@20 & NDCG@20 & Total impv. \\
+        \midrule
+        baseline  & 52.82 & 18.3   & 25.93   & -           \\
+        Setting 1 & 52.77 & 18.27  & 25.89   & -0.41       \\
+        Setting 2 & 52.81 & 18.26  & 25.9    & -0.35       \\
+        Setting 3 & 52.58 & 18.21  & 25.78   & -1.52       \\
+        Setting 4 & 52.6  & 18.15  & 25.76   & -1.89       \\
+        Setting 5 & 52.62 & 18.16  & 25.72   & -1.95       \\
+        Setting 6 & 52.65 & 18.2   & 25.78   & -1.45       \\
+        Setting 7 & 52.64 & 18.14  & 25.77   & -1.83       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{SGAT Layer Exploration}
+Let's introduce basic information about
+how self-attention works before starting.
+Defining a original feature set as $\{x^i | x^i \in ; i \in N \}$,
+we can get $q, k$,and $ v$ vectors after passing $x^i$ through
+linear transform.Define $q, k$,and $v$ as follows :
+\begin{equation} q^i = W^qX^i \end{equation}
+\begin{equation} k^i = W^kX^i \end{equation}
+\begin{equation} v^i = W^vX^i  \end{equation}
+where q means query (to match others), k means key (to be matched),
+and v means information to be extracted.
+Making vector q and k match is our next step. Therefore,
+we use the function defined as 'Scaled Dot-Product Attention'
+to get attention weight vector:
+
+\begin{equation}
+    \alpha_{1,i} = \frac{q_1 \cdot k}{\sqrt{d}}
+\end{equation}
+
+where $\cdotp$ means dot product, d is the dimension of q and k.
+Softmax function is attached to avoid over-fitting,
+so $\alpha_{1,i}$ is going to be like :
+
+\begin{equation}
+    \hat{\alpha}_{1,i}  = \frac{exp(\alpha_{1,i})}{\sum_jexp(\alpha_{1,i})}
+\end{equation}
+
+Multiply attention weight with $v$ and we'll get attention output vector:
+
+\begin{equation}
+    \textrm{attn\_out} = \sum_i\hat{\alpha}_{1,i}v^i
+\end{equation}
+
+Above all are basic attention mechanism,
+and the main purpose is to built our own self-attention among
+SGAT layer's features of q and k.
+Due to limitation of dimension and little knowledge of
+dgl library which is used in GNN network,
+we can't directly use $\bm{multi-head attention}$ function built
+in pytorch library. As the result, the aim of self-attention
+is to learn merely more information on q and k
+before sending them to SGAT layer.
+
+\textbf{Beyond our expectation,
+    nonetheless, the results show that the machine can't even learn a thing.
+    We conclude that cause happened because of complicating model architecture
+    after adding self-attention among SGAT layer.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{CONCLUSION}
 
 In our experiments, no matter with positional encoding or not,
-the performance of MUTIHEADATTENTION is worse than GRU,
-although using MUTIHEADATTENTION is slightly fast.
+the performance of MultiheadAttention layer is worse than GRU,
+although using MultiheadAttention layer is slightly fast.
 In multi-head experiment of TransformerEncoder,
 we found there is no distinct trend about num of head,
 also we found when TransformerEncoder stacking more layers,
